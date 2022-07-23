@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native'
 import { Heading, HStack, IconButton, Text, useTheme, VStack, FlatList, Center } from 'native-base';
 import { SignOut } from 'phosphor-react-native';
 import { ChatTeardropText } from 'phosphor-react-native';
@@ -12,6 +13,7 @@ import { Order, OrderProps } from '../components/Order';
 export function Home() {
 
     const { colors } = useTheme();
+    const navigation = useNavigation();
     const [statusSelected, setStatusSelected] = useState<'open' | 'closed'>('open');
     const [orders, setOrders] = useState<OrderProps[]>([
         {
@@ -34,6 +36,14 @@ export function Home() {
         },
     ]);
 
+    function handleNewOrder() {
+        navigation.navigate('new')
+    }
+
+    function handleOpenDetails(orderId: string) {
+        navigation.navigate('details', { orderId })
+    }
+
     return (
         <VStack flex={1} pb={6} bg="gray.700">
             <HStack
@@ -55,10 +65,10 @@ export function Home() {
             <VStack flex={1} px={6}>
                 <HStack w="full" mt={8} mb={4} justifyContent="space-between" alignItems="center">
                     <Heading color="gray.100">
-                        Meus chamados
+                        Solicitações
                     </Heading>
                     <Text color="gray.200">
-                        3
+                        {orders.length}
                     </Text>
                 </HStack>
                 <HStack space={3} mb={8}>
@@ -79,7 +89,7 @@ export function Home() {
                 <FlatList
                     data={orders}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <Order data={item} />}
+                    renderItem={({ item }) => <Order data={item} onPress={() => handleOpenDetails(item.id)} />}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100 }}
                     ListEmptyComponent={() => (
@@ -92,7 +102,7 @@ export function Home() {
                         </Center>
                     )}
                 />
-                <Button title="Nova solicitação" />
+                <Button title="Nova solicitação" onPress={handleNewOrder} />
             </VStack>
 
 
